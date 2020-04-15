@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProductTypeRepository")
@@ -24,7 +25,8 @@ class ProductType
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="type")
+     * @ORM\OneToMany(targetEntity="App\Entity\Product", mappedBy="type", fetch="LAZY")
+     * @Serializer\Exclude()
      */
     private $products;
 

@@ -36,15 +36,18 @@ class ProductTypeRepository extends ServiceEntityRepository
     }
     */
 
-    /*
-    public function findOneBySomeField($value): ?ProductType
+    /**
+     * @param $name
+     * @return ProductType|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findOneByName(string $name): ?ProductType
     {
         return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('p.name = :val')
+            ->setParameter('val', $name)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
 }
