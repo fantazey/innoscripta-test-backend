@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\OrderStatusEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,9 +21,19 @@ class Order
     private $id;
 
     /**
+     * @ORM\Column(type="guid", unique=true)
+     */
+    private $uid;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     private $status;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
+     */
+    private $paid;
 
     /**
      * @ORM\Column(type="datetime")
@@ -75,7 +86,7 @@ class Order
     private $client;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\OrderProduct", mappedBy="clientOrder", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\OrderProduct", mappedBy="clientOrder", orphanRemoval=true, cascade={"persist"})
      */
     private $orderProducts;
 
@@ -99,6 +110,22 @@ class Order
         $this->status = $status;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPaid()
+    {
+        return $this->paid;
+    }
+
+    /**
+     * @param mixed $paid
+     */
+    public function setPaid($paid): void
+    {
+        $this->paid = $paid;
     }
 
     public function getCreatedAt(): ?\DateTimeInterface
@@ -222,6 +249,23 @@ class Order
         return $this;
     }
 
+    public function getUid(): ?string
+    {
+        return $this->uid;
+    }
+
+    public function setUid(string $uid): self
+    {
+        $this->uid = $uid;
+
+        return $this;
+    }
+
+    public function canModifyProducts(): bool
+    {
+        return $this->getStatus() === OrderStatusEnum::INITIAL;
+    }
+
     /**
      * @return Collection|OrderProduct[]
      */
@@ -251,5 +295,10 @@ class Order
         }
 
         return $this;
+    }
+
+    public function canConfirm(): bool
+    {
+        return $this->getStatus() === OrderStatusEnum::INITIAL;
     }
 }
