@@ -34,11 +34,6 @@ class ConfirmOrderType extends BaseOrderForm
                 'choices' => PaymentMethodEnum::getForFormChoices(),
                 'constraints' => [new NotBlank()]
             ])
-            ->add('deliveryDate', DateTimeType::class, [
-                'constraints' => [new NotBlank()],
-                'date_format' => DateTimeType::HTML5_FORMAT,
-                'widget' => 'single_text'
-            ])
             ->add('deliveryAddress', TextType::class, [
                 'constraints' => [new NotBlank()]
             ])

@@ -6,10 +6,16 @@ use App\Enum\OrderStatusEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\OrderRepository")
  * @ORM\Table(name="`order`")
+ * @Serializer\VirtualProperty(
+ *     "products",
+ *     exp="object.getProductList()",
+ *     options={@Serializer\SerializedName("products")}
+ * )
  */
 class Order
 {
@@ -31,9 +37,9 @@ class Order
     private $status;
 
     /**
-     * @ORM\Column(type="boolean", nullable=false, options={"default": false})
+     * @ORM\Column(type="boolean", nullable=false, options={"default": "0"})
      */
-    private $paid;
+    private $paid = false;
 
     /**
      * @ORM\Column(type="datetime")
@@ -87,6 +93,7 @@ class Order
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\OrderProduct", mappedBy="clientOrder", orphanRemoval=true, cascade={"persist"})
+     * @Serializer\Exclude
      */
     private $orderProducts;
 
@@ -300,5 +307,17 @@ class Order
     public function canConfirm(): bool
     {
         return $this->getStatus() === OrderStatusEnum::INITIAL;
+    }
+
+    /**
+     * @return array
+     */
+    public function getProductList(): array
+    {
+        $result = [];
+        foreach ($this->getOrderProducts() as $orderProduct) {
+            $result[] = $orderProduct->getProduct();
+        }
+        return $result;
     }
 }

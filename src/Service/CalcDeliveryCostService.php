@@ -13,8 +13,8 @@ class CalcDeliveryCostService
      */
     public function calcDeliveryCost(string $address): ?float
     {
-        $result = random_int(0, 10);
-        if ($result < 2) {
+        $result = random_int(5, 15);
+        if ($result % 2) {
             return null; //can not calc delivery cost for this address
         }
         return (float)$result * 0.15;

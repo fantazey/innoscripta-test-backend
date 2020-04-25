@@ -8,12 +8,14 @@ use App\Repository\OrderRepository;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\{Request, Response};
+use Symfony\Component\HttpFoundation\{Request, Response, Session\SessionInterface};
 
 class OrderController extends AbstractFOSRestController
 {
 
     private $orderManager;
+
+    const SESSION_ORDER_KEY = 'order-uid';
 
     public function __construct(OrderManager $orderManager)
     {
@@ -36,11 +38,32 @@ class OrderController extends AbstractFOSRestController
     }
 
     /**
-     * @Rest\Post("/addToCart")
-     * @param Request $request
+     * @Rest\Get("/orderCheck")
+     * @param OrderRepository $orderRepository
+     * @param SessionInterface $session
      * @return Response
      */
-    public function add(Request $request)
+    public function check(OrderRepository $orderRepository, SessionInterface $session): Response
+    {
+//        $uid = $session->get(self::SESSION_ORDER_KEY);
+        $uid = '7700c7df-8f16-45f3-85ad-b6d9adb70ff3';
+        if (!$uid) {
+            return $this->handleView($this->view(['order' => false], Response::HTTP_OK));
+        }
+        $order = $orderRepository->findOneByUID($uid);
+        if ($order && $order->canModifyProducts()) {
+            return $this->handleView($this->view(['order' => $order], Response::HTTP_OK));
+        }
+        return $this->handleView($this->view(['order' => false], Response::HTTP_OK));
+    }
+
+    /**
+     * @Rest\Post("/addToCart")
+     * @param Request $request
+     * @param SessionInterface $session
+     * @return Response
+     */
+    public function add(Request $request, SessionInterface $session)
     {
         $form = $this->createForm(AddProductToOrderType::class);
         $data = $request->request->all();
@@ -52,6 +75,7 @@ class OrderController extends AbstractFOSRestController
 
         try {
             $order = $this->orderManager->addProductToOrder($form->getData());
+            $session->set(self::SESSION_ORDER_KEY, $order->getUid());
             return $this->handleSuccess($order);
         } catch (\Exception $e) {
             return $this->handleException($e);
@@ -95,7 +119,28 @@ class OrderController extends AbstractFOSRestController
         }
         try {
             $order = $this->orderManager->confirmOrder($form->getData());
-            $this->handleSuccess($order);
+            return $this->handleSuccess($order);
+        } catch (\Exception $e) {
+            return $this->handleException($e);
+        }
+    }
+
+    /**
+     * @Rest\Post("/addressCheck")
+     * @param Request $request
+     * @return Response
+     */
+    public function checkAddress(Request $request)
+    {
+        try {
+            $address = $request->request->get('address');
+            $deliveryCost = $this->orderManager->calculateDeliveryCost($address);
+            return $this->handleView(
+                $this->view(
+                    ['deliveryCost' => $deliveryCost],
+                    Response::HTTP_ACCEPTED
+                )
+            );
         } catch (\Exception $e) {
             return $this->handleException($e);
         }

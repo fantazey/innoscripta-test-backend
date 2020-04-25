@@ -39,7 +39,10 @@ class BaseOrderForm extends AbstractType
     public function submitListener(FormEvent $event)
     {
         $data = $event->getData();
-        $order = $this->orderRepository->findOneByUID($data['uid']);
+        $order = null;
+        if (array_key_exists('uid', $data)) {
+            $order = $this->orderRepository->findOneByUID($data['uid']);
+        }
         $this->processOrderSubmitListener($event, $order);
     }
 

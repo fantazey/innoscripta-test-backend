@@ -48,7 +48,7 @@ class InitMenuCommand extends Command
      */
     private function initProductTypes()
     {
-        $productTypes = ['pizza', 'snack', 'dessert', 'drink', 'souse', 'other'];
+        $productTypes = ['pizza', 'snack', 'dessert', 'drink', 'sauce', 'other'];
         foreach ($productTypes as $name) {
             $type = $this->productTypeRepository->findOneByName($name);
             if (!$type) {

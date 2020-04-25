@@ -8,6 +8,7 @@ use App\Enum\PaymentMethodEnum;
 use App\Service\CalcDeliveryCostService;
 use Doctrine\ORM\EntityManager;
 use App\Entity\{Order, OrderProduct, Product, User};
+use Symfony\Component\Validator\Constraints\Date;
 
 class OrderManager
 {
@@ -79,10 +80,9 @@ class OrderManager
     public function confirmOrder($formData)
     {
         $address = $formData['deliveryAddress'];
-        $deliveryCost = $this->calculateDeliveryCost($address);
+        $deliveryCost = $this->calculateDeliveryCost($address, false);
         /** @var Order $order */
         $order = $formData['order'];
-        $order->setDeliverAt($formData['deliveryDate']);
         $order->setDeliveryCost($deliveryCost);
         $order->setAddress($address);
         $order->setPaymentMethod($formData['paymentMethod']);
@@ -136,6 +136,7 @@ class OrderManager
     public function updateOrderDelivery(Order $order)
     {
         $order->setStatus(OrderStatusEnum::DELIVERY);
+        $order->setDeliverAt(new \DateTime());
         $this->em->persist($order);
         $this->em->flush();
     }
@@ -171,14 +172,19 @@ class OrderManager
 
     /**
      * @param string $address
+     * @param bool $throwException
      * @return float
      * @throws \Exception
      */
-    protected function calculateDeliveryCost(string $address): float
+    public function calculateDeliveryCost(string $address, bool $throwException = true): float
     {
         $deliveryCost = $this->deliveryCostCalculator->calcDeliveryCost($address);
         if (!$deliveryCost) {
-            throw new \Exception('can-not-calc-delivery-cost-for-address');
+            if ($throwException) {
+                throw new \Exception('can-not-calc-delivery-cost-for-address');
+            }
+            // hard code for only success calc delivery cost on confirm order
+            $deliveryCost = 2.22;
         }
         return $deliveryCost;
     }
