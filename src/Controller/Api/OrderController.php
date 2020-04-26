@@ -45,8 +45,7 @@ class OrderController extends AbstractFOSRestController
      */
     public function check(OrderRepository $orderRepository, SessionInterface $session): Response
     {
-//        $uid = $session->get(self::SESSION_ORDER_KEY);
-        $uid = '7700c7df-8f16-45f3-85ad-b6d9adb70ff3';
+        $uid = $session->get(self::SESSION_ORDER_KEY);
         if (!$uid) {
             return $this->handleView($this->view(['order' => false], Response::HTTP_OK));
         }

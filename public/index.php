@@ -6,22 +6,24 @@ use Symfony\Component\HttpFoundation\Request;
 
 require dirname(__DIR__).'/config/bootstrap.php';
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,HEAD,OPTIONS");
-header("Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization");
-header("Access-Control-Allow-Headers: *");
+// used for separated react server and symfony server
 
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    header("Access-Control-Allow-Origin: *");
-    header("Access-Control-Allow-Credentials: true");
-    header("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,HEAD,OPTIONS");
-    header("Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization");
-    header("Access-Control-Allow-Headers: *");
-    header("Content-Type: text/plain charset=UTF-8");
-    header("Content-Length: 0");
-    return;
-}
+//header("Access-Control-Allow-Origin: *");
+//header("Access-Control-Allow-Credentials: true");
+//header("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,HEAD,OPTIONS");
+//header("Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization");
+//header("Access-Control-Allow-Headers: *");
+
+//if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+//    header("Access-Control-Allow-Origin: *");
+//    header("Access-Control-Allow-Credentials: true");
+//    header("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,HEAD,OPTIONS");
+//    header("Access-Control-Allow-Headers: Origin,Content-Type,Accept,Authorization");
+//    header("Access-Control-Allow-Headers: *");
+//    header("Content-Type: text/plain charset=UTF-8");
+//    header("Content-Length: 0");
+//    return;
+//}
 
 if ($_SERVER['APP_DEBUG']) {
     umask(0000);
