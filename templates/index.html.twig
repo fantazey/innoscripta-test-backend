@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets %}
+    {{ parent() }}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="/favicon.ico">
     <link href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet" type="text/css" crossorigin="anonymous">
@@ -9,16 +10,14 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 {% endblock %}
 
-{% block title %}
-    Test Pizza Shop
-{% endblock %}
+{% block title %}Test Pizza Shop{% endblock %}
 
 {% block body %}
     <div id="root"></div>
 {% endblock %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="{{ asset('build/vendors~js/app.js') }}"></script>
+    {{ parent() }}
     <script type="text/javascript" src="{{ asset('build/js/app.js') }}"></script>
     <script type="text/javascript" src="{{ asset('build/runtime.js') }}"></script>
 {% endblock %}
