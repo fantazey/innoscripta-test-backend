@@ -39,11 +39,12 @@ class MenuController extends AbstractFOSRestController
         /** @var ProductType $productType */
         $productType = $productTypeRepository->findOneByName($type);
         $products = $productType->getProducts()->slice($offset, $limit);
+        $products = array_merge($products, []);
         $meta = [
             'total' => (int)$productType->getProducts()->count(),
             'limit' => (int)$limit,
             'offset' => (int)$offset
         ];
-        return $this->handleView($this->view(['products' => $products, 'meta' => $meta]));
+        return $this->handleView($this->view(['products' => (array)$products, 'meta' => $meta]));
     }
 }
